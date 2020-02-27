@@ -366,14 +366,19 @@ class RoomView extends React.Component {
 			const subCollection = await db.collections.get('subscriptions');
 			const room = await subCollection.find(rid);
 			this.setState({ room });
-			navigation.setParams({ room });
+			navigation.setParams({
+				name: this.getRoomTitle(room),
+				avatar: room.name,
+				t: room.t
+			});
 			this.observeRoom(room);
 		} catch (error) {
 			if (this.t !== 'd') {
 				console.log('Room not found');
 				this.internalSetState({ joined: false });
-			} else if (this.rid) {
-				// We navigate to RoomView before the DM is inserted to the local db
+			}
+			if (this.rid) {
+				// We navigate to RoomView before the Room is inserted to the local db
 				// So we retry just to make sure we have the right content
 				this.retryFindCount = this.retryFindCount + 1 || 1;
 				if (this.retryFindCount <= 3) {
